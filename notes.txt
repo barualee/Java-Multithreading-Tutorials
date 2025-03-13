@@ -1,0 +1,161 @@
+multithreading:
+
+two methods: 
+extending thread class, 
+implementing runnable interface
+
+when extending, cannot extend other class. 
+so implementing via runnable is better as more interfaces can be implemented along with it.
+we start thread by start method
+
+join method: 
+ask the child thread to first complete execution before main thread continues further operation.
+w/o join, main thread and children run parallely.
+
+daemon thread:
+run in background, like garbage collection.
+terminated by JVM, when normal threads finish, even THO the DAEMON THREAD may not have completed execution.
+setDaemon(true) to set thread as daemon thread.
+
+thread priority:
+min number for higher priority
+main class has 5.
+even if we set child thread at max prioirty, for first run main thread has higher, then subsequent runs will
+work accordingly.
+
+synchronization:
+allow shared resource to be used by only one thread at a time.
+static resources are shared across all instance of objects of the same class.
+done via intrinsic lock/monitor lock, which thread acquires to access the resource/ciritcal resource block.
+cause extended waiting when critical blocks are large.
+issues:
+1.reduced concurrency, performance bottlenecks.
+2.synchornized methods reduce fine grain control.
+3.when subclass is overriding a sync method from super class, explicitly define as sync. not doing can cause unexpected behaviour. 
+
+custom lock objects can help rather than using intrinsic locks.
+decoupled concerns for the two threads
+
+wait and notify
+wait - thread suspended, waiting state. release lock. lock goes to next thread. waits until another thread notify
+*to be called from within a sync block, else IllegalMonitorStateException
+notify - wake up waiting thread, 
+notifyall - wake up all waiting threads, 
+* in notify, the block after notify also get executed and then control is passed over.
+two types: notify to single thread, or notifyAll for all threads.
+
+wait vs sleep: wait n notify is used for inter thread communication, sleep is used to pause execution.
+
+producer & consumer problem:
+producer threads generate data and store into shared buffer and one or more consumer threads
+retrieve it and process the data concurrently
+when buffer is full producer stop producing and when buffer is empty consumer stop consuming.
+
+ExecutorService
+used to work with multiple threads, scalable as compared to runnable, thread class.
+4 types:
+singlethreadexecutor
+fixedthreadpoolexecutor
+cachedthreadpool
+scheduledexecutor
+
+it is cleaner, as there is automatic handling of creation and destruction of threads.
+
+the executor service is enclosed within try with resources block
+we put this in try with resources block, because we need to shut down the resources after completion.
+one way to do this.
+
+singlethreadexecutor has one thread with n tasks. it picks each task and runs them.
+if thread is killed, executor recreates it to execute the task.
+as there is only one thread, tasks are run sequentially.
+
+fixedthreadpool has n threads passed as argument.
+
+cachedthreadpool does not have a fixed thread count, it creates and destroys as per queued tasks in synchornous queue.
+new thread created if all existing threads busy.
+if thread is free for 60 sec, it is destroyed. there is also upper guard rail to stop infinite thread creation.
+
+scheduledthreadexecutorservice
+it closes the executor service using shutdownnow based on certain condition.
+await termination is crude way to implement this.
+
+shutdown is used to complete current tasks and then shutdown,
+shutdownnow is instant, halts current tasks.
+
+**one thread in java is one OS level thread.
+
+what does ideal threadpool size depend on?
+ideally number of cores your system has is ideal count.
+
+CPU IntensiveTask:
+for CPU intensive tasks, as higher than that thread count, there is performance degradation, as all threads try to get more CPU time, 
+and more time in context switching is spent due to more threads switching around.
+but, not all cores will run only your threads as some cores will do OS level tasks,
+
+IO IntensiveTask:
+for this, we have more idle time, as IO operations make network calls and wait for response.
+so higher thread pool may be better but need to  play around this to understand most optimal soln.
+optimal soln balancing concurrency and resource utilisation
+
+Callables:
+they return value, runnable and run dont have return.
+and we need to use submit, not execute, for these callables.
+so if you need to return, you use callable.
+and we use future to return the values. they act as placeholders.
+
+use get() method to return the value.
+get is blocking in nature, if at calling time of get, there is no result, 
+it will block current thread execution, till it gets the future result.
+
+//if this is true, then future maybe cancelled, if false cant be cancelled.
+res.cancel(true);
+//here, give info if future got cancelled, can be used to create business logic based on answer got.
+boolean cancelled = res.isCancelled();
+//return true whether future completed or got cancelled.
+boolean isDone = res.isDone();
+
+synchronized collections
+java collections are not thread safe.
+to be thread safe, we can use two methods:
+1.collections.synchornize() method
+2.use concurrent collections
+
+first methods has drawbacks:
+1.single coarse grain lock: reduced concurrency and more contention
+2. limited functionality:
+3. no fail fast iterators: these ierators throw concureent modification exception, if updates done during iteration
+4. performance overhead: 
+
+countdown latch:
+counter, decreased each time its called
+await method is there in latch to stop execution further until all threads have finished decrementing latch by said number.
+similar to join? -> join is used to wait for thread to complete exection. (main thread waiting for worker threads)
+latch used for coordination amongst threads.
+better and cleaner for dynamic number of threads.
+
+cyclic barrier -> blocking queue
+blockingqueue interface: blockingdeque, transferqueue
+implementations:
+arrayBQ, LinkedBQ, PrioirtyBQ, DelayQ, SynchronousQ
+methods: put, take, offer, poll, peek
+
+puts element in queue until full, if its full, blocks thread till space is available.
+removes head element of queue if exist, else blocks till head becomes available
+offer is non blocking; return true if space available and element inserted; else return false, no block
+poll is non blocking; return head if head available and head element removed; else return null, no block
+peek reteive head of queue but not remove; null if empty; 
+
+these methods allow override with timeouts.
+
+fail fast vs fail safe:
+fail fast does not allow list modification during iterator method doing iteration;
+fail safe allows.
+
+concurrent map:
+multiple threads concurrently need hashmap modification.
+
+
+cyclic barrier:
+
+
+
