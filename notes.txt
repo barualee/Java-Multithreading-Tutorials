@@ -156,6 +156,80 @@ multiple threads concurrently need hashmap modification.
 
 
 cyclic barrier:
+wait for all threads to reach and then continue next iteration.
+barrier on breach, gets reset on its own
+it differs from latch bcoz of its reusability; as latch cant be re-used.
 
+exchanger:
+sync point where threads can swap and exchange data elements
+blocking exchange method
+thread which executes exchange blocked till other thread arrives to take the data
+point to point comm.
+simple for two threads
+synchornous
+symmetric exchange
 
+can be achived by queue also
+one to many comm.
+async, buffering, non symmetrical
+
+exchanger is bidrectional: send and recevie data between threads
+
+COPY on write array (COWA):
+for multiple threads write and read data
+
+Lock conditions:
+similar to wait n notify but with granular controls
+
+reentrant locks:
+allow same thread to acquire lock without causing deadlocks
+without blocking, thread can again get the lock
+lock fairness: by default unfair;
+
+readwrit locks: 
+better for read heavy applications
+read multiple can take, write only one can take;
+
+visibility problem: 
+volatile keyword:
+flushes variable updates to shared cache
+it slows down the application, 
+
+deadlock: situation where each thread waiting for other to release resource to procees
+detect deadlocks: manually, programmatically, detect every set timer seconds.
+Prevent deadlocks:
+timeout, global ordering of locks, avoid nesting of locks, use thread safe alternatives.
+
+Atomic variables:
+offer lock free, thread safe operations on single variables.
+ensure read-modify-write operations occur atomically.
+avoid race condition.
+data consistency and integrity, sans the overhead of synchronization
+efficient for thread safety
+
+semaphores:
+sync mechanism to control access to a shared resource in concurrent programming.
+counters to manage no. of allowed access to resources, avoid race conditions, 
+it restricts the number of threads accessing a 3rd party service
+we can acquire multiple permits also using one instance.
+methods: tryacquire(), with timeout tryacquire, availablepermits, 
+
+Mutex:
+mutual exclusion
+sync mechanism to control access to shared resource in multithreaded env.
+
+Fork Join Framework:
+use multiple cores, 1.7
+same like executor service.
+
+differences:
+1. can create subtasks: divide n conquer approach
+2. per thread queueing and work stealing
+
+Uses:
+efficient work steal algo, simplifies parallelism, use multi core processors
+
+work steal: idle threads take tasks from busy threads, imrpove efficiency.
+RecursiveTask: like callable, with return types
+recursiveaction: like runnable, no return
 
